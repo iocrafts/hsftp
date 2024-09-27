@@ -1,0 +1,8 @@
+.stack-work/
+*~
+docker/
+confs/
+doc/
+Makefile
+stack.yaml.lock
+*.sh

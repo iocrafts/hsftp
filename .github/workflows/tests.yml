@@ -1,0 +1,35 @@
+name: Tests
+
+# on: [workflow_dispatch, push, pull_request]
+on: [workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      sftp1:
+        # image: zhabba/sftp-arm64
+        image: atmoz/sftp
+        ports:
+          - 9988:22
+        env:
+          SFTP_USERS: "demo:demo:::upload"
+        # options: --health-cmd "nc -w2 -z 0.0.0.0 22 || exit 1" --health-start-period 10s --health-timeout 5s
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: install libssh2
+      run: sudo apt update && sudo apt -y install libssh2-1-dev
+
+    - uses: haskell-actions/setup@v2
+      with:
+        ghc-version: '9.4.8'
+        enable-stack: true
+        stack-version: 'latest'
+
+    - name: Build
+      run: stack build
+
+    - name: Run tests
+      run: stack test
+

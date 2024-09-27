@@ -1,0 +1,114 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           hsftp
+version:        1.0.0
+description:    Please see the README on GitHub at <https://github.com/mdusi/hsftp#readme>
+homepage:       https://github.com/mdusi/hsftp#readme
+bug-reports:    https://github.com/mdusi/hsftp/issues
+author:         Maurizio Dusi
+maintainer:     Maurizio Dusi
+copyright:      Maurizio Dusi
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/mdusi/hsftp
+
+library
+  exposed-modules:
+      CmdOptions
+      Commands
+      Config
+      Options
+      Reader
+      Util
+  other-modules:
+      Paths_hsftp
+  autogen-modules:
+      Paths_hsftp
+  hs-source-dirs:
+      src
+  default-extensions:
+      RecordWildCards
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , cmdargs
+    , directory
+    , filepath
+    , filepath-bytestring
+    , libssh2
+    , mtl
+    , time
+    , yaml
+  default-language: Haskell2010
+
+executable hsftp
+  main-is: Main.hs
+  other-modules:
+      Paths_hsftp
+  autogen-modules:
+      Paths_hsftp
+  hs-source-dirs:
+      app
+  default-extensions:
+      RecordWildCards
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , cmdargs
+    , directory
+    , filepath
+    , filepath-bytestring
+    , hsftp
+    , libssh2
+    , mtl
+    , time
+    , yaml
+  default-language: Haskell2010
+
+test-suite hsftp-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      TestCommands
+      TestUtil
+      Paths_hsftp
+  autogen-modules:
+      Paths_hsftp
+  hs-source-dirs:
+      test
+  default-extensions:
+      RecordWildCards
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , cmdargs
+    , directory
+    , filepath
+    , filepath-bytestring
+    , hsftp
+    , libssh2
+    , mtl
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , tasty-smallcheck
+    , time
+    , yaml
+  default-language: Haskell2010

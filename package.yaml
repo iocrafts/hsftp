@@ -1,0 +1,76 @@
+name:                hsftp
+version:             1.0.0
+github:              "mdusi/hsftp"
+license:             BSD-3-Clause
+author:              "Maurizio Dusi"
+maintainer:          "Maurizio Dusi"
+copyright:           "Maurizio Dusi"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/mdusi/hsftp#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- libssh2
+- cmdargs
+- yaml
+- aeson
+- mtl
+- time
+- directory
+- filepath-bytestring
+- filepath
+
+default-extensions:
+- RecordWildCards
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  hsftp:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hsftp
+
+tests:
+  hsftp-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hsftp
+    - tasty
+    - tasty-hunit
+    - tasty-smallcheck
+    - tasty-quickcheck
