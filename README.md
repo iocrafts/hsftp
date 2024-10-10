@@ -4,7 +4,7 @@ Usage of hsftp
 -----------------
 
 ```
-Hsftp 1.0.0. Usage: hsftp OPTION
+Hsftp 1.0.1. Usage: hsftp OPTION
 
 hsftp [OPTIONS] [ITEM]
 
@@ -43,7 +43,7 @@ remote:
 ## Download from remote to local - filter by date and extension
 
 ```
-hsftp -c confs/conf.yaml -d \
+hsftp -c conf.yaml -d \
     --from-date "2024-06-14 12:15 PDT" \
     --transfer-from /path/to/remote/folder \
     --transfer-to /path/to/local/folder \
@@ -53,7 +53,7 @@ hsftp -c confs/conf.yaml -d \
 ## Upload from local to remote - filter by extensions
 
 ```
-hsftp -c confs/conf.yaml -u \
+hsftp -c conf.yaml -u \
     --from-date "2024-06-14 12:15 PDT" \
     --transfer-from /path/to/local/folder \
     --transfer-to /path/to/remote/folder \
@@ -63,7 +63,7 @@ hsftp -c confs/conf.yaml -u \
 ## Upload from local to remote - archive files locally after upload
 
 ```
-hsftp -c confs/conf.yaml -u \
+hsftp -c conf.yaml -u \
     --from-date "2024-06-14 12:15 PDT" \
     --transfer-from /path/to/local/folder \
     --transfer-to /path/to/remote/folder \
