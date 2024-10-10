@@ -7,17 +7,22 @@ Maintainer  : Maurizio Dusi
 Stability   : stable
 Portability : POSIX
 
-This module provides utility functions for date and time manipulation.
+This module provides utility functions for file, date and time manipulation.
 
 -}
 
 
 module Util
-    ( toDate
+    ( createFile
+    , toDate
     , toEpoch
     ) where
 
+import           Control.Monad    ( unless )
+
 import           Data.Time
+
+import           System.Directory ( doesFileExist )
 
 {-|
   Convert a string to seconds since Epoch.
@@ -44,3 +49,15 @@ toDate d =  case parseTimeM True defaultTimeLocale "%F %R %Z" d of
 -}
 toEpoch :: UTCTime -> Integer
 toEpoch d = read $ formatTime defaultTimeLocale "%s" d
+
+{-|
+  Create a file if it does not exist.
+
+  Example usage:
+
+  >>> createFile "test.txt"
+-}
+createFile :: FilePath -> IO ()
+createFile cfile = do
+  fileExists <- doesFileExist cfile
+  unless fileExists $ writeFile cfile ""

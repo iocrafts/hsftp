@@ -20,7 +20,7 @@ import           Reader                 ( Env (..) )
 
 import           System.Console.CmdArgs ( cmdArgsRun )
 
-import           Util                   ( toDate, toEpoch )
+import           Util                   ( createFile, toDate, toEpoch )
 
 
 -- | Loads the environment configuration from a file.
@@ -39,6 +39,7 @@ loadEnv cfile = do
     Config {..} <- case config of
         Left e      -> error $ Y.prettyPrintParseException e
         Right yconf -> mkConfig yconf
+    createFile configKnownHosts
     return Env  { hostName = configHost
                 , port = configPort
                 , knownHosts = configKnownHosts

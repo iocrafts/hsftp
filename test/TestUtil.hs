@@ -16,10 +16,13 @@ module TestUtil
 
 import           Data.Time
 
+import           System.Directory ( doesFileExist )
+import           System.IO.Temp   ( withTempFile )
+
 import           Test.Tasty       ( TestTree, testGroup )
 import           Test.Tasty.HUnit ( testCase, (@?=) )
 
-import           Util             ( toEpoch )
+import           Util             ( createFile, toEpoch )
 
 utilTests :: TestTree
 utilTests =
@@ -34,4 +37,12 @@ utilTests =
             -- Expected epoch time for January 1, 2020.
             let expectedEpoch2020 = 1577836800
             toEpoch date2020 @?= expectedEpoch2020
+
+          , testCase "createFile" $ do
+            withTempFile "/tmp" "known_hosts" $ \tmpFile _ -> do
+              -- Create a temporary file
+              createFile tmpFile
+              -- Check if the file exists
+              exists <- doesFileExist tmpFile
+              exists @?= True
           ]
