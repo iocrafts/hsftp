@@ -6,6 +6,9 @@ on:
       - 'v*.*.*'
 
 jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
   docker:
     runs-on: ubuntu-latest
     steps:
