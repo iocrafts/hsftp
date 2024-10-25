@@ -1,5 +1,7 @@
 # Hsftp: SFTP client tools for secure file transfer operations.
 
+[![Docker Build](https://github.com/mdusi/hsftp/actions/workflows/docker-build.yml/badge.svg)](https://github.com/mdusi/hsftp/actions/workflows/docker-build.yml)
+
 Usage of hsftp
 -----------------
 
