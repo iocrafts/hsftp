@@ -1,3 +1,13 @@
+## v1.1.0 (2024-10-28)
+
+### Feat
+
+- **option**: Added dry-run
+
+### Fix
+
+- **cabal**: added dependency for tests
+
 ## v1.0.1 (2024-10-10)
 
 ### Fix
