@@ -8,7 +8,7 @@ import           Commands               ( download, upload )
 
 import           Config
 
-import           Control.Monad          ( when )
+import           Control.Monad          ( unless, when )
 import           Control.Monad.Reader
 
 import qualified Data.ByteString.Char8  as C
@@ -19,6 +19,7 @@ import           Options                ( Direction (..), Options (..) )
 import           Reader                 ( Env (..) )
 
 import           System.Console.CmdArgs ( cmdArgsRun )
+import           System.Exit            ( exitSuccess )
 
 import           Util                   ( createFile, toDate, toEpoch )
 
@@ -33,13 +34,14 @@ import           Util                   ( createFile, toDate, toEpoch )
 -- pretty-printed parse exception.
 --
 -- Returns the constructed `Env` value.
-loadEnv :: FilePath -> IO Env
-loadEnv cfile = do
+loadEnv :: FilePath -> Bool -> IO Env
+loadEnv cfile dryRun = do
     config <- Y.decodeFileEither cfile
     Config {..} <- case config of
         Left e      -> error $ Y.prettyPrintParseException e
         Right yconf -> mkConfig yconf
-    createFile configKnownHosts
+    unless dryRun $ createFile configKnownHosts
+
     return Env  { hostName = configHost
                 , port = configPort
                 , knownHosts = configKnownHosts
@@ -55,7 +57,7 @@ loadEnv cfile = do
 main :: IO ()
 main = do
     Options{..} <- cmdArgsRun options
-    env <- loadEnv conf
+    env <- loadEnv conf dryRun
     let date = toEpoch . toDate $ fromDate
         env' = env  { date = date
                     , transferFrom = src
@@ -63,6 +65,7 @@ main = do
                     , transferExtensions = map C.pack extensions
                     , archiveTo = archive
                     }
+    when dryRun $ putStrLn "Dry run mode enabled. Exiting." >> exitSuccess
 
     when (direction == Down) $ do
         runReaderT download env'

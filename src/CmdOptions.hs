@@ -36,5 +36,6 @@ options = cmdArgsMode $ Options
           ,     dst = ""          &= typ "DIR" &= help "Folder to transfer to" &= explicit &= name "transfer-to"
           ,     archive = Nothing &= typ "DIR" &= help "Folder to archive to after upload" &= explicit &= name "archive-to"
           ,     verbose = 0       &= groupname "\nMiscellaneous" &= help "Verbose level: 1, 2 or 3" &= explicit &= name "verbose"
+          ,     dryRun = False    &= help "Do a dry-run (\"No-op\") transfer." &= explicit &= name "dry-run" &= name "n"
           ,     others = []       &= args
           } &= summary ("Hsftp " <> showVersion version <> ". Usage: hsftp OPTION") &= program "hsftp"
