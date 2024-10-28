@@ -43,6 +43,8 @@ data Options
               -- ^ Archive into this folder after successful upload (folder must exist).
             , verbose    :: Int
               -- ^ Verbose level.
+            , dryRun     :: Bool
+              -- ^ Do a dry-run (no-op) transfer.
             , others     :: [FilePath]
               -- ^ List of files and/or folders.
             }
