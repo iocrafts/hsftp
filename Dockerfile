@@ -6,7 +6,7 @@ RUN apt update && \
         apt -y install libssh2-1-dev
 
 COPY . /opt/build/
-RUN stack build 
+RUN stack build
 RUN mv "$(stack path --local-install-root --system-ghc)/bin" /opt/build/bin
 
 # ---------

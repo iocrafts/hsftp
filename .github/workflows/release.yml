@@ -1,4 +1,4 @@
-name: Docker Build
+name: Release
 
 on:
   push:
@@ -6,11 +6,12 @@ on:
       - 'v*.*.*'
 
 jobs:
-  tests:
-    uses: ./.github/workflows/tests.yml
+  test:
+    uses: ./.github/workflows/build.yml
 
-  docker:
+  release:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
