@@ -1,5 +1,7 @@
 # Hsftp: SFTP client tools for secure file transfer operations.
 
+[![Release](https://github.com/mdusi/hsftp/actions/workflows/release.yml/badge.svg)](https://github.com/mdusi/hsftp/actions/workflows/release.yml)
+
 Usage of hsftp
 -----------------
 
