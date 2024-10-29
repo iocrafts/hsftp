@@ -1,9 +1,9 @@
-# Hsftp: SFTP client tools for secure file transfer operations.
+# Hsftp: a SFTP client tool for secure file transfer operations.
 
 [![Release](https://github.com/mdusi/hsftp/actions/workflows/release.yml/badge.svg)](https://github.com/mdusi/hsftp/actions/workflows/release.yml)
 
 Usage of hsftp
------------------
+--------------
 
 ```
 Hsftp 1.1.0. Usage: hsftp OPTION
@@ -23,6 +23,7 @@ Common flags:
 
 Miscellaneous:
      --verbose=INT        Verbose level: 1, 2 or 3
+  -n --dry-run            Do a dry-run ("No-op") transfer.
   -? --help               Display help message
   -V --version            Print version information
      --numeric-version    Print just the version number
@@ -46,9 +47,9 @@ remote:
 
 ```
 hsftp -c conf.yaml -d \
-    --from-date "2024-06-14 12:15 PDT" \
     --transfer-from /path/to/remote/folder \
     --transfer-to /path/to/local/folder \
+    --from-date "2024-06-14 12:15 PDT" \
     -e xml
 ```
 
@@ -56,9 +57,9 @@ hsftp -c conf.yaml -d \
 
 ```
 hsftp -c conf.yaml -u \
-    --from-date "2024-06-14 12:15 PDT" \
     --transfer-from /path/to/local/folder \
     --transfer-to /path/to/remote/folder \
+    --from-date "2024-06-14 12:15 PDT" \
     -e xml -e Xml
 ```
 
@@ -66,9 +67,9 @@ hsftp -c conf.yaml -u \
 
 ```
 hsftp -c conf.yaml -u \
-    --from-date "2024-06-14 12:15 PDT" \
     --transfer-from /path/to/local/folder \
     --transfer-to /path/to/remote/folder \
     --archive-to /path/to/local/archive/folder \
+    --from-date "2024-06-14 12:15 PDT" \
     -e xml -e Xml
 ```

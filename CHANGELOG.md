@@ -2,7 +2,7 @@
 
 ### Feat
 
-- **option**: Added dry-run
+- **option**: added dry-run
 
 ### Fix
 
