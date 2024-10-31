@@ -19,6 +19,7 @@ module Commands
 import           Control.Monad                      ( filterM )
 import           Control.Monad.Reader
 
+import           Data.Bits                          ( (.&.) )
 import qualified Data.ByteString.Char8              as C
 
 import           Network.SSH.Client.LibSSH2
@@ -27,6 +28,7 @@ import           Network.SSH.Client.LibSSH2.Foreign ( SftpAttributes (..) )
 import           Reader                             ( Env (..), ReaderIO )
 
 import           System.Directory                   ( copyFileWithMetadata,
+                                                      doesFileExist,
                                                       getModificationTime,
                                                       listDirectory,
                                                       removeFile )
@@ -47,8 +49,10 @@ download = do
 
     liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
         allFiles <- sftpListDir sftp transferFrom
-        let files = filter (\x -> (toInteger . saMtime . snd ) x >= date &&
-                        or [extension `isExtensionOf` fst x | extension <- transferExtensions]) allFiles
+        let byDate x = (toInteger . saMtime . snd) x >= date
+            byExtension x = null transferExtensions || or [extension `isExtensionOf` fst x | extension <- transferExtensions]
+            isFile = (== 0o100000) . (.&. 0o170000) . saPermissions . snd
+            files = filter (\x -> byDate x && byExtension x && isFile x) allFiles
             getFile f = do
                 let f' = C.unpack f
                     src = transferFrom </> f'
@@ -65,9 +69,9 @@ upload = do
     Env{..} <- ask
 
     liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
-        let byExtension x = or [extension `isExtensionOf` encodeFilePath x | extension <- transferExtensions]
+        let byExtension x = null transferExtensions || or [extension `isExtensionOf` encodeFilePath x | extension <- transferExtensions]
             byDate = fmap ( (>= date) . toEpoch ) . getModificationTime
-        allFiles <- listDirectory transferFrom >>= filterM ( byDate . (transferFrom </>) )
+        allFiles <- listDirectory transferFrom >>= filterM ( doesFileExist . (transferFrom </>) ) >>= filterM ( byDate . (transferFrom </>) )
         let files = filter byExtension allFiles
             putFile f = do
                 let src = transferFrom </> f
