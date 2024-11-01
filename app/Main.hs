@@ -68,7 +68,9 @@ main = do
     when dryRun $ putStrLn "Dry run mode enabled. Exiting." >> exitSuccess
 
     when (direction == Down) $ do
-        runReaderT download env'
+        numFiles <- runReaderT download env'
+        putStrLn $ "Download completed. " ++ show numFiles ++ " files downloaded."
 
     when (direction == Up) $ do
-        runReaderT upload env'
+        numFiles <- runReaderT upload env'
+        putStrLn $ "Upload completed. " ++ show numFiles ++ " files uploaded."

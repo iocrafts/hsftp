@@ -43,7 +43,7 @@ import           Util                               ( toEpoch )
   Download files from a remote server using SFTP.
   Both remote and local folders must exist.
 -}
-download :: ReaderIO ()
+download :: ReaderIO Int
 download = do
     Env{..} <- ask
 
@@ -59,12 +59,13 @@ download = do
                     dst = transferTo </> f'
                 sftpReceiveFile sftp dst src
         mapM_ (getFile . fst) files
+        return $ length files
 
 {-|
   Upload files to a remote server using SFTP.
   Both remote and local folders must exist.
 -}
-upload :: ReaderIO ()
+upload :: ReaderIO Int
 upload = do
     Env{..} <- ask
 
@@ -84,3 +85,4 @@ upload = do
                         dst = d </> f
                     copyFileWithMetadata src dst >> removeFile src
         mapM_ (\x -> putFile x >> archiveFile x) files
+        return $ length files
