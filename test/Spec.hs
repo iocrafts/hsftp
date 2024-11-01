@@ -18,7 +18,7 @@ module Main
 
 import           Test.Tasty   ( TestTree, defaultMain, testGroup )
 
-import           TestCommands ( sftpCommandsTests )
+import           TestCommands ( sftpDownloadTests, sftpUploadTests )
 
 import           TestUtil     ( utilTests )
 
@@ -26,4 +26,4 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [sftpCommandsTests, utilTests]
+tests = testGroup "Tests" [sftpDownloadTests, sftpUploadTests, utilTests]
