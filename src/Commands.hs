@@ -42,6 +42,7 @@ import           Util                               ( toEpoch )
 {-|
   Download files from a remote server using SFTP.
   Both remote and local folders must exist.
+  The function returns the number of files downloaded.
 -}
 download :: ReaderIO Int
 download = do
@@ -64,6 +65,7 @@ download = do
 {-|
   Upload files to a remote server using SFTP.
   Both remote and local folders must exist.
+  The function returns the number of files uploaded.
 -}
 upload :: ReaderIO Int
 upload = do
