@@ -24,8 +24,6 @@ import           Commands                   ( download, upload )
 import           Control.Monad              ( filterM )
 import           Control.Monad.Reader
 
-import           Data.Maybe                 ( fromJust )
-
 import           Reader                     ( Env (..) )
 
 import           System.Directory           ( createDirectoryIfMissing,
@@ -42,15 +40,13 @@ import           Test.Tasty.HUnit
 
 -- | Represents the test environment configuration.
 data TestEnv
-  = TestEnv { sftpHost            :: String
-            , sftpPort            :: Int
-            , sftpUser            :: String
-            , sftpPass            :: String
-            , repoLocalDir        :: String
-            , sftpRemoteDir       :: String
-            , sftpLocalBaseDir    :: String
-            , sftpLocalUploadDir  :: String
-            , sftpLocalArchiveDir :: String
+  = TestEnv { sftpHost         :: String
+            , sftpPort         :: Int
+            , sftpUser         :: String
+            , sftpPass         :: String
+            , repoLocalDir     :: String
+            , sftpRemoteDir    :: String
+            , sftpLocalBaseDir :: String
             }
   deriving (Show)
 
@@ -62,8 +58,6 @@ uploadConfs = TestEnv { sftpHost = "0.0.0.0"
                       , repoLocalDir = "./test/files/upload"
                       , sftpRemoteDir = "/upload"
                       , sftpLocalBaseDir = "/tmp/hsftp-u"
-                      , sftpLocalUploadDir = "/tmp/hsftp-u/upload"
-                      , sftpLocalArchiveDir = "/tmp/hsftp-u/archive"
                       }
 
 downloadConfs :: TestEnv
@@ -74,8 +68,6 @@ downloadConfs = TestEnv { sftpHost = "0.0.0.0"
                         , repoLocalDir = "./test/files/download"
                         , sftpRemoteDir = "/download"
                         , sftpLocalBaseDir = "/tmp/hsftp-d"
-                        , sftpLocalUploadDir = "/tmp/hsftp-d/upload"
-                        , sftpLocalArchiveDir = ""
                         }
 
 -- | Acquires a resource and returns an 'Env' configuration.
@@ -145,19 +137,27 @@ sftpUploadTests =
           expectedFiles <- listDirectory repoLocalDir >>= filterM ( doesFileExist . (repoLocalDir </>) )
           numFiles @?= length expectedFiles
 
-      {--
       , testCase "Upload and archive" $ do
           env <- getResource
-          let env' = env { transferFrom = repoLocalDir
+          let archiveFromDir = sftpLocalBaseDir </> "toarchive"
+              archiveToDir = sftpLocalBaseDir </> "archived"
+          mapM_ (createDirectoryIfMissing False) [archiveFromDir, archiveToDir]
+          (_archiveFile, hArchiveFile) <- openTempFile archiveFromDir "testfile.ark"
+          hClose hArchiveFile
+
+          let extensions = ["ark"]
+              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+              env' = env { transferFrom = archiveFromDir
                          , transferTo = sftpRemoteDir </> "archive"
-                         , archiveTo = Just sftpLocalArchiveDir
+                         , archiveTo = Just archiveToDir
+                         , transferExtensions = extensions
                          }
 
           numFiles <- runReaderT upload env'
-          let archivedFile = fromJust (archiveTo env') </> takeFileName uploadedFile
-          a <- doesFileExist archivedFile
-          a @?= True
-      --}
+          allFiles <- listDirectory archiveToDir >>= filterM ( doesFileExist . (archiveToDir </>) )
+          let expectedFiles = filter byExtension allFiles
+              expectedNumFiles = length expectedFiles
+          numFiles @?= expectedNumFiles
       ]
 
 
