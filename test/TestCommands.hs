@@ -15,164 +15,186 @@ and uploading files.
 -}
 
 module TestCommands
-    ( sftpCommandsTests
+    ( sftpDownloadTests
+    , sftpUploadTests
     ) where
 
 import           Commands                   ( download, upload )
 
+import           Control.Monad              ( filterM )
 import           Control.Monad.Reader
-
-import qualified Data.ByteString.Char8      as C
-import           Data.Maybe                 ( fromJust )
-
-import           Network.SSH.Client.LibSSH2 ( sftpListDir, sftpSendFile,
-                                              withSFTPUser )
 
 import           Reader                     ( Env (..) )
 
 import           System.Directory           ( createDirectoryIfMissing,
-                                              doesFileExist, getFileSize,
-                                              listDirectory, removeDirectory,
-                                              removeFile )
-import           System.FilePath            ( takeFileName, (</>) )
+                                              doesFileExist, listDirectory,
+                                              removeDirectoryRecursive )
+import           System.FilePath            ( (</>) )
+import           System.FilePath.ByteString ( encodeFilePath, isExtensionOf )
 import           System.IO                  ( hClose, openTempFile )
 
 import           Test.Tasty                 ( TestTree, testGroup,
                                               withResource )
 import           Test.Tasty.HUnit
 
--- Write your test cases here
 
 -- | Represents the test environment configuration.
 data TestEnv
-  = TestEnv { sftpHost              :: String
-            , sftpPort              :: Int
-            , sftpUser              :: String
-            , sftpPass              :: String
-            , sftpLocalUploadDir    :: String
-            , sftpRemoteUploadDir   :: String
-            , sftpLocalDownloadDir  :: String
-            , sftpRemoteDownloadDir :: String
-            , sftpKnownHostsDir     :: String
-            , sftpLocalArchiveDir   :: String
+  = TestEnv { sftpHost         :: String
+            , sftpPort         :: Int
+            , sftpUser         :: String
+            , sftpPass         :: String
+            , repoLocalDir     :: String
+            , sftpRemoteDir    :: String
+            , sftpLocalBaseDir :: String
             }
   deriving (Show)
 
-confs :: TestEnv
-confs = TestEnv { sftpHost = "0.0.0.0"
-                , sftpPort = 9988
-                , sftpUser = "demo"
-                , sftpPass = "demo"
-                , sftpLocalUploadDir = "/tmp"
-                , sftpRemoteUploadDir = "/upload"
-                , sftpLocalDownloadDir = "/tmp/demo"
-                , sftpRemoteDownloadDir = "/upload"
-                , sftpKnownHostsDir = "/tmp"
-                , sftpLocalArchiveDir = "/tmp/archive"
-                }
+uploadConfs :: TestEnv
+uploadConfs = TestEnv { sftpHost = "0.0.0.0"
+                      , sftpPort = 9988
+                      , sftpUser = "demo"
+                      , sftpPass = "demo"
+                      , repoLocalDir = "./test/files/upload"
+                      , sftpRemoteDir = "/upload"
+                      , sftpLocalBaseDir = "/tmp/hsftp-u"
+                      }
 
--- | Acquires a resource and returns the file path of the acquired resource.
+downloadConfs :: TestEnv
+downloadConfs = TestEnv { sftpHost = "0.0.0.0"
+                        , sftpPort = 9988
+                        , sftpUser = "demo"
+                        , sftpPass = "demo"
+                        , repoLocalDir = "./test/files/download"
+                        , sftpRemoteDir = "/download"
+                        , sftpLocalBaseDir = "/tmp/hsftp-d"
+                        }
+
+-- | Acquires a resource and returns an 'Env' configuration.
 --   The resource is acquired by creating a directory if it doesn't exist,
 --   and opening a temporary file in the specified directory.
---   The file path of the temporary file is returned.
-acquireResource :: IO FilePath
-acquireResource = do
-  let TestEnv {..} = confs
-  createDirectoryIfMissing True sftpLocalDownloadDir
-  createDirectoryIfMissing True sftpLocalArchiveDir
-  (knownHostsFile, hKnownHostsFile) <- openTempFile sftpKnownHostsDir "known_hosts"
+--   The 'Env' configuration includes details such as host name, port, user credentials,
+--   and the path to the known hosts file.
+acquireResource :: TestEnv -> IO Env
+acquireResource teConfs = do
+  let TestEnv {..} = teConfs
+  createDirectoryIfMissing True sftpLocalBaseDir
+
+  (knownHostsFile, hKnownHostsFile) <- openTempFile sftpLocalBaseDir "known_hosts"
   hClose hKnownHostsFile
-  return knownHostsFile
+  let env = Env { hostName = sftpHost
+                , port = sftpPort
+                , user = sftpUser
+                , password = sftpPass
+                , date = 0
+                , archiveTo = Nothing
+                , knownHosts = knownHostsFile
+                , transferFrom = ""
+                , transferTo = ""
+                , transferExtensions = []
+                }
+  return env
 
 
--- | Release the resource by removing the known hosts file and the local download directory.
+-- | Release the resource by removing the local base directory and its contents.
 --
--- This function takes a 'FilePath' representing the path to the known hosts file. It removes the known hosts file
--- using 'removeFile' function. Then, it lists all the files in the local download directory using 'listDirectory'
--- function and removes each file using 'removeFile' function. Finally, it removes the local download directory
--- using 'removeDirectory' function.
-releaseResource :: FilePath -> IO ()
-releaseResource knownHostsFile = do
-  let TestEnv {..} = confs
-  removeFile knownHostsFile
+-- This function takes a 'TestEnv' configuration and an 'Env' configuration.
+-- It removes the local base directory and all its contents using the 'removeDirectoryRecursive' function.
+releaseResource :: TestEnv -> Env -> IO ()
+releaseResource teConfs _env = do
+  removeDirectoryRecursive $ sftpLocalBaseDir teConfs
 
-  fs <- listDirectory sftpLocalDownloadDir
-  mapM_ ( removeFile . (sftpLocalDownloadDir </>) ) fs >>
-    removeDirectory sftpLocalDownloadDir
 
-  as <- listDirectory sftpLocalArchiveDir
-  mapM_ ( removeFile . (sftpLocalArchiveDir </>) ) as >>
-    removeDirectory sftpLocalArchiveDir
+-- | This function defines the test tree for the SFTP upload command.
+sftpUploadTests :: TestTree
+sftpUploadTests =
+  withResource (acquireResource uploadConfs) (releaseResource uploadConfs) $ \getResource ->
+    testGroup "SFTP Upload tests" $
+      let TestEnv {..} = uploadConfs
+      in
+      [ testCase "Filter by extension" $ do
+          env <- getResource
+          let extensions = ["log"]
+              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+              env' = env { transferFrom = repoLocalDir
+                         , transferTo = sftpRemoteDir </> "byext"
+                         , transferExtensions = extensions
+                         }
 
--- | This function defines the test tree for the SFTP actions.
-sftpCommandsTests :: TestTree
-sftpCommandsTests =
-    withResource acquireResource releaseResource $ \getResource ->
-        testGroup "SFTP tests" $
-          let TestEnv {..} = confs
-              env = Env { hostName = sftpHost
-                        , port = sftpPort
-                        , user = sftpUser
-                        , password = sftpPass
-                        , date = 0
-                        , archiveTo = Nothing
-                        , knownHosts = ""
-                        , transferFrom = ""
-                        , transferTo = ""
-                        , transferExtensions = []
-                        }
-          in
-          [ testCase "SFTP upload" $ do
-              knownHostsFile <- getResource
-              (uploadedFile, hUploadedFile) <- openTempFile sftpLocalUploadDir "testfile.ulog"
-              hClose hUploadedFile
-              let env' = env { transferFrom = sftpLocalUploadDir
-                             , transferTo = sftpRemoteUploadDir
-                             , transferExtensions = ["ulog"]
-                             , knownHosts = knownHostsFile
-                             }
-              runReaderT upload env'
-              isUploaded <- withSFTPUser (knownHosts env') (user env') (password env') (hostName env') (port env') $ \sftp -> do
-                allFiles <- sftpListDir sftp (transferTo env')
-                return $ takeFileName uploadedFile `elem` map (C.unpack . fst) allFiles
-              isUploaded @?= True
-              removeFile uploadedFile
+          numFiles <- runReaderT upload env'
+          allFiles <- listDirectory repoLocalDir >>= filterM ( doesFileExist . (repoLocalDir </>) )
+          let expectedFiles = filter byExtension allFiles
+              expectedNumFiles = length expectedFiles
+          numFiles @?= expectedNumFiles
 
-          , testCase "SFTP upload and archive" $ do
-              knownHostsFile <- getResource
-              (uploadedFile, hUploadedFile) <- openTempFile sftpLocalUploadDir "testfile.alog"
-              hClose hUploadedFile
-              let env' = env { transferFrom = sftpLocalUploadDir
-                             , transferTo = sftpRemoteUploadDir
-                             , transferExtensions = ["alog"]
-                             , archiveTo = Just sftpLocalArchiveDir
-                             , knownHosts = knownHostsFile
-                             }
-              runReaderT upload env'
-              let archivedFile = fromJust (archiveTo env') </> takeFileName uploadedFile
-              a <- doesFileExist archivedFile
-              a @?= True
+      , testCase "Any extension" $ do
+          env <- getResource
+          let env' = env { transferFrom = repoLocalDir
+                         , transferTo = sftpRemoteDir </> "anyext"
+                         }
 
-          , testCase "SFTP download" $ do
-              knownHostsFile <- getResource
-              (uploadedFile, hUploadedFile) <- openTempFile sftpLocalUploadDir "testfile.dlog"
-              hClose hUploadedFile
-              let env' = env { transferFrom = sftpRemoteDownloadDir
-                             , transferTo = sftpLocalDownloadDir
-                             , transferExtensions = ["dlog"]
-                             , knownHosts = knownHostsFile
-                             }
-              _ <- withSFTPUser (knownHosts env') (user env') (password env') (hostName env') (port env') $ \sftp -> do
-                    let src = uploadedFile
-                        dst = transferFrom env' </> takeFileName uploadedFile
-                    sftpSendFile sftp src dst 0o664
+          numFiles <- runReaderT upload env'
+          expectedFiles <- listDirectory repoLocalDir >>= filterM ( doesFileExist . (repoLocalDir </>) )
+          numFiles @?= length expectedFiles
 
-              runReaderT download env'
-              let downloadedFile = transferTo env' </> takeFileName uploadedFile
-              e <- doesFileExist downloadedFile
-              s1 <- getFileSize uploadedFile
-              s2 <- getFileSize downloadedFile
-              e @?= True
-              s1 @?= s2
-              removeFile downloadedFile >> removeFile uploadedFile
-          ]
+      , testCase "Upload and archive" $ do
+          env <- getResource
+          let archiveFromDir = sftpLocalBaseDir </> "toarchive"
+              archiveToDir = sftpLocalBaseDir </> "archived"
+          mapM_ (createDirectoryIfMissing False) [archiveFromDir, archiveToDir]
+          (_archiveFile, hArchiveFile) <- openTempFile archiveFromDir "testfile.ark"
+          hClose hArchiveFile
+
+          let extensions = ["ark"]
+              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+              env' = env { transferFrom = archiveFromDir
+                         , transferTo = sftpRemoteDir </> "archive"
+                         , archiveTo = Just archiveToDir
+                         , transferExtensions = extensions
+                         }
+
+          numFiles <- runReaderT upload env'
+          allFiles <- listDirectory archiveToDir >>= filterM ( doesFileExist . (archiveToDir </>) )
+          let expectedFiles = filter byExtension allFiles
+              expectedNumFiles = length expectedFiles
+          numFiles @?= expectedNumFiles
+      ]
+
+
+-- | This function defines the test tree for the SFTP download command.
+sftpDownloadTests :: TestTree
+sftpDownloadTests =
+  withResource (acquireResource downloadConfs) (releaseResource downloadConfs) $ \getResource ->
+    testGroup "SFTP Download tests" $
+      let TestEnv {..} = downloadConfs
+      in
+      [ testCase "Filter by extension" $ do
+          env <- getResource
+          let testFolder = sftpLocalBaseDir </> "byext"
+          createDirectoryIfMissing False testFolder
+
+          let extensions = ["log"]
+              env' = env { transferFrom = sftpRemoteDir
+                         , transferTo = testFolder
+                         , transferExtensions = extensions
+                         }
+              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+
+          numFiles <- runReaderT download env'
+          allFiles <-  listDirectory repoLocalDir >>= filterM ( doesFileExist . (repoLocalDir </>) )
+          let expectedFiles = filter byExtension allFiles
+              expectedNumFiles = length expectedFiles
+          numFiles @?= expectedNumFiles
+
+      , testCase "Any extension" $ do
+          env <- getResource
+          let testFolder = sftpLocalBaseDir </> "anyext"
+          createDirectoryIfMissing False testFolder
+
+          let env' = env { transferFrom = sftpRemoteDir
+                         , transferTo = testFolder
+                         }
+          numFiles <- runReaderT download env'
+          expectedFiles <- listDirectory repoLocalDir >>= filterM ( doesFileExist . (repoLocalDir </>) )
+          numFiles @?= length expectedFiles
+      ]
