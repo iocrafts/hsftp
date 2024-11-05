@@ -70,13 +70,15 @@ download = do
 upload :: ReaderIO Int
 upload = do
     Env{..} <- ask
+    let byExtension x = null transferExtensions || or [extension `isExtensionOf` encodeFilePath x | extension <- transferExtensions]
+        byDate = fmap ( (>= date) . toEpoch ) . getModificationTime
+    allFiles <- liftIO $ listDirectory transferFrom >>=
+                    filterM ( doesFileExist . (transferFrom </>) ) >>=
+                    filterM ( byDate . (transferFrom </>) )
+    let files = filter byExtension allFiles
 
     liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
-        let byExtension x = null transferExtensions || or [extension `isExtensionOf` encodeFilePath x | extension <- transferExtensions]
-            byDate = fmap ( (>= date) . toEpoch ) . getModificationTime
-        allFiles <- listDirectory transferFrom >>= filterM ( doesFileExist . (transferFrom </>) ) >>= filterM ( byDate . (transferFrom </>) )
-        let files = filter byExtension allFiles
-            putFile f = do
+        let putFile f = do
                 let src = transferFrom </> f
                     dst = transferTo </> f
                 sftpSendFile sftp src dst 0o664
