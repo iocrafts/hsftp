@@ -54,9 +54,9 @@ jobs:
     - name: Use cache
       uses: actions/cache@v4
       with:
-        key: ${{ runner.os }}-stack-global-${{ hashFiles('**.yaml') }}
+        key: ${{ runner.os }}-stack-global-${{ hashFiles('$REPO_DIR/**.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-stack-global-${{ hashFiles('**.yaml') }}
+          ${{ runner.os }}-stack-global-${{ hashFiles('$REPO_DIR/**.yaml') }}
           ${{ runner.os }}-stack-global-
           ${{ runner.os }}-stack-global
         path: |
