@@ -43,23 +43,21 @@ remote:
 
 # Usage
 
-## Download from remote to local - filter by date and extension
+## Download from remote to local - filter by date
 
 ```
 hsftp -c conf.yaml -d \
     --transfer-from /path/to/remote/folder \
     --transfer-to /path/to/local/folder \
-    --from-date "2024-06-14 12:15 PDT" \
-    -e xml
+    --from-date "2024-06-14 12:15 PDT"
 ```
 
-## Upload from local to remote - filter by extensions
+## Upload from local to remote - filter by extension
 
 ```
 hsftp -c conf.yaml -u \
     --transfer-from /path/to/local/folder \
     --transfer-to /path/to/remote/folder \
-    --from-date "2024-06-14 12:15 PDT" \
     -e xml -e Xml
 ```
 
@@ -69,7 +67,5 @@ hsftp -c conf.yaml -u \
 hsftp -c conf.yaml -u \
     --transfer-from /path/to/local/folder \
     --transfer-to /path/to/remote/folder \
-    --archive-to /path/to/local/archive/folder \
-    --from-date "2024-06-14 12:15 PDT" \
-    -e xml -e Xml
+    --archive-to /path/to/local/archive/folder
 ```
