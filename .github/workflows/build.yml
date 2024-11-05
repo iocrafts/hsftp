@@ -5,8 +5,6 @@ on: [workflow_dispatch, workflow_call, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      REPO_DIR: repo
       
     services:
       sftp1:
@@ -22,13 +20,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: ${{ env.REPO_DIR }}
+        path: repo
 
     - name: check test files
       id: download-volume
       run: |
         sudo mkdir -p ./download
-        sudo cp ./$REPO_DIR/test/files/download/* ./download/
+        sudo cp ./repo/test/files/download/* ./download/
         
     - name: restart sftp container
       uses: docker://docker
@@ -43,27 +41,27 @@ jobs:
       run: |
         sudo apt update 
         sudo apt -y install libssh2-1-dev
-      
-    - uses: haskell-actions/setup@v2
+
+    - name: use cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        key: ${{ runner.os }}-stack-${{ hashFiles('repo/stack.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-${{ hashFiles('repo/stack.yaml') }}
+          ${{ runner.os }}-stack-
+        path: |
+          repo/.stack-work
+          ~/.stack
+
+    - name: setup Haskell stack
+      uses: haskell-actions/setup@v2
       id: setup-haskell-stack
       with:
         ghc-version: '9.6.5'
         enable-stack: true
         stack-version: 'latest'
         
-    - name: Use cache
-      uses: actions/cache@v4
-      with:
-        key: ${{ runner.os }}-stack-global-${{ hashFiles('**.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-stack-global-${{ hashFiles('**.yaml') }}
-          ${{ runner.os }}-stack-global-
-          ${{ runner.os }}-stack-global
-        path: |
-          ${{ steps.setup-haskell-stack.outputs.stack-root }}
-          .stack-work
-          */.stack-work
-          
     - name: Build and Test
-      working-directory: ${{ env.REPO_DIR }}
+      working-directory: repo
       run: stack build --system-ghc --test
