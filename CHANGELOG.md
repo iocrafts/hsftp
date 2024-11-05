@@ -1,3 +1,10 @@
+## v1.2.0 (2024-11-04)
+
+### Feat
+
+- **commands**: return number of files that were transferred
+- **commands**: select all regular files when no extension is provided
+
 ## v1.1.0 (2024-10-28)
 
 ### Feat
