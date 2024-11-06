@@ -23,7 +23,7 @@ import           Test.Tasty.HUnit ( testCase, (@?=) )
 readerTests :: TestTree
 readerTests =
     testGroup "Reader tests"
-        [ testCase "environment initialization" $ do
+        [ testCase "Environment initialization" $ do
             let env = Env { hostName = "localhost"
                           , port = 22
                           , user = "testuser"
