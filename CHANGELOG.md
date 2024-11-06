@@ -1,3 +1,14 @@
+## v1.3.0 (2024-11-06)
+
+### Feat
+
+- **commands**: only connect to server if there are files to upload
+- **options**: show what would transfer on dry-run
+
+### Refactor
+
+- **commands**: retrieve files before connecting to server for upload
+
 ## v1.2.0 (2024-11-04)
 
 ### Feat
