@@ -78,16 +78,17 @@ upload = do
                     filterM ( byDate . (transferFrom </>) )
     let files = filter byExtension allFiles
 
-    unless noOp $ liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
-        let putFile f = do
-                let src = transferFrom </> f
-                    dst = transferTo </> f
-                sftpSendFile sftp src dst 0o664
-            archiveFile f = case archiveTo of
-                Nothing -> return ()
-                Just d -> do
+    unless (noOp || null files) $
+        liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
+            let putFile f = do
                     let src = transferFrom </> f
-                        dst = d </> f
-                    copyFileWithMetadata src dst >> removeFile src
-        mapM_ (\x -> putFile x >> archiveFile x) files
+                        dst = transferTo </> f
+                    sftpSendFile sftp src dst 0o664
+                archiveFile f = case archiveTo of
+                    Nothing -> return ()
+                    Just d -> do
+                        let src = transferFrom </> f
+                            dst = d </> f
+                        copyFileWithMetadata src dst >> removeFile src
+            mapM_ (\x -> putFile x >> archiveFile x) files
     return $ length files
