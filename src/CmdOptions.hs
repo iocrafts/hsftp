@@ -29,7 +29,7 @@ import           System.Console.CmdArgs ( CmdArgs, Mode, args, cmdArgsMode,
 options :: Mode (CmdArgs Options)
 options = cmdArgsMode $ Options
           {     conf = ""         &= typ "FILE"  &= help "Load conf from file"
-          ,     fromDate = ""     &= typ "DATE" &= help "Filter files by date (expected format YYYY-MM-DD HH:MM UTC|PST|...)" &= explicit &= name "from-date"
+          ,     fromDate = ""     &= typ "DATE" &= help "Filter files by date (YYYY-MM-DD HH:MM UTC|PST|...)" &= explicit &= name "from-date"
           ,     extensions = []   &= help "Filter files by extensions"
           ,     direction = enum [Up &= help "upload", Down &= help "download"]
           ,     src = ""          &= typ "DIR" &= help "Folder to transfer from" &= explicit &= name "transfer-from"

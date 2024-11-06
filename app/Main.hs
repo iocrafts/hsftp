@@ -19,7 +19,6 @@ import           Options                ( Direction (..), Options (..) )
 import           Reader                 ( Env (..) )
 
 import           System.Console.CmdArgs ( cmdArgsRun )
-import           System.Exit            ( exitSuccess )
 
 import           Util                   ( createFile, toDate, toEpoch )
 
@@ -52,6 +51,7 @@ loadEnv cfile dryRun = do
                 , transferExtensions = []
                 , archiveTo = Nothing
                 , date = 0
+                , noOp = dryRun
                 }
 
 main :: IO ()
@@ -65,12 +65,15 @@ main = do
                     , transferExtensions = map C.pack extensions
                     , archiveTo = archive
                     }
-    when dryRun $ putStrLn "Dry run mode enabled. Exiting." >> exitSuccess
 
     when (direction == Down) $ do
         numFiles <- runReaderT download env'
-        putStrLn $ "Download completed. " ++ show numFiles ++ " files downloaded."
+        if dryRun
+        then putStrLn $ "Would download " ++ show numFiles ++ " file(s)."
+        else putStrLn $ "Download completed. " ++ show numFiles ++ " file(s) downloaded."
 
     when (direction == Up) $ do
         numFiles <- runReaderT upload env'
-        putStrLn $ "Upload completed. " ++ show numFiles ++ " files uploaded."
+        if dryRun
+        then putStrLn $ "Would upload " ++ show numFiles ++ " file(s)."
+        else putStrLn $ "Upload completed. " ++ show numFiles ++ " file(s) uploaded."

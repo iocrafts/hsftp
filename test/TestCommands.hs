@@ -92,6 +92,7 @@ acquireResource teConfs = do
                 , transferFrom = ""
                 , transferTo = ""
                 , transferExtensions = []
+                , noOp = False
                 }
   return env
 
