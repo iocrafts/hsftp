@@ -25,17 +25,17 @@ readerTests =
     testGroup "Reader tests"
         [ testCase "environment initialization" $ do
             let env = Env { hostName = "localhost"
-                          , port = 22
-                          , user = "testuser"
-                          , password = "testpass"
-                          , knownHosts = "/path/to/known_hosts"
-                          , transferFrom = "/path/to/source"
-                          , transferTo = "/path/to/destination"
-                          , transferExtensions = []
-                          , archiveTo = Nothing
-                          , date = 0
-                          , noOp = False
-                          }
+                            , port = 22
+                            , user = "testuser"
+                            , password = "testpass"
+                            , knownHosts = "/path/to/known_hosts"
+                            , transferFrom = "/path/to/source"
+                            , transferTo = "/path/to/destination"
+                            , transferExtensions = []
+                            , archiveTo = Nothing
+                            , date = 0
+                            , noOp = False
+                            }
 
             hostName env @?= "localhost"
             port env @?= 22

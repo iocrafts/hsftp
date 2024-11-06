@@ -27,22 +27,22 @@ import           Util             ( createFile, toEpoch )
 utilTests :: TestTree
 utilTests =
     testGroup "Util tests"
-          [ testCase "epoch zero" $ do
-            let date = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
-            -- Expected epoch time for the above date is 0
-            toEpoch date @?= 0
+      [ testCase "epoch zero" $ do
+          let date = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
+          -- Expected epoch time for the above date is 0
+          toEpoch date @?= 0
 
-          , testCase "toEpoch" $ do
-            let date2020 = UTCTime (fromGregorian 2020 1 1) (secondsToDiffTime 0)
-            -- Expected epoch time for January 1, 2020.
-            let expectedEpoch2020 = 1577836800
-            toEpoch date2020 @?= expectedEpoch2020
+      , testCase "toEpoch" $ do
+          let date2020 = UTCTime (fromGregorian 2020 1 1) (secondsToDiffTime 0)
+          -- Expected epoch time for January 1, 2020.
+          let expectedEpoch2020 = 1577836800
+          toEpoch date2020 @?= expectedEpoch2020
 
-          , testCase "createFile" $ do
-            withTempFile "/tmp" "known_hosts" $ \tmpFile _ -> do
-              -- Create a temporary file
-              createFile tmpFile
-              -- Check if the file exists
-              exists <- doesFileExist tmpFile
-              exists @?= True
-          ]
+      , testCase "createFile" $ do
+          withTempFile "/tmp" "known_hosts" $ \tmpFile _ -> do
+            -- Create a temporary file
+            createFile tmpFile
+            -- Check if the file exists
+            exists <- doesFileExist tmpFile
+            exists @?= True
+      ]
