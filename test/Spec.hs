@@ -20,10 +20,12 @@ import           Test.Tasty   ( TestTree, defaultMain, testGroup )
 
 import           TestCommands ( sftpDownloadTests, sftpUploadTests )
 
+import           TestReader   ( readerTests )
+
 import           TestUtil     ( utilTests )
 
 main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [sftpDownloadTests, sftpUploadTests, utilTests]
+tests = testGroup "Tests" [sftpDownloadTests, sftpUploadTests, utilTests, readerTests]

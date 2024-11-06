@@ -16,7 +16,8 @@ module Commands
     , upload
     ) where
 
-import           Control.Monad                      ( filterM )
+
+import           Control.Monad                      ( filterM, unless )
 import           Control.Monad.Reader
 
 import           Data.Bits                          ( (.&.) )
@@ -59,7 +60,7 @@ download = do
                     src = transferFrom </> f'
                     dst = transferTo </> f'
                 sftpReceiveFile sftp dst src
-        mapM_ (getFile . fst) files
+        unless noOp $ mapM_ (getFile . fst) files
         return $ length files
 
 {-|
@@ -77,16 +78,17 @@ upload = do
                     filterM ( byDate . (transferFrom </>) )
     let files = filter byExtension allFiles
 
-    liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
-        let putFile f = do
-                let src = transferFrom </> f
-                    dst = transferTo </> f
-                sftpSendFile sftp src dst 0o664
-            archiveFile f = case archiveTo of
-                Nothing -> return ()
-                Just d -> do
+    unless (noOp || null files) $
+        liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
+            let putFile f = do
                     let src = transferFrom </> f
-                        dst = d </> f
-                    copyFileWithMetadata src dst >> removeFile src
-        mapM_ (\x -> putFile x >> archiveFile x) files
-        return $ length files
+                        dst = transferTo </> f
+                    sftpSendFile sftp src dst 0o664
+                archiveFile f = case archiveTo of
+                    Nothing -> return ()
+                    Just d -> do
+                        let src = transferFrom </> f
+                            dst = d </> f
+                        copyFileWithMetadata src dst >> removeFile src
+            mapM_ (\x -> putFile x >> archiveFile x) files
+    return $ length files

@@ -22,27 +22,41 @@ import           System.IO.Temp   ( withTempFile )
 import           Test.Tasty       ( TestTree, testGroup )
 import           Test.Tasty.HUnit ( testCase, (@?=) )
 
-import           Util             ( createFile, toEpoch )
+import           Util             ( createFile, toDate, toEpoch )
 
 utilTests :: TestTree
 utilTests =
     testGroup "Util tests"
-          [ testCase "epoch zero" $ do
-            let date = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
-            -- Expected epoch time for the above date is 0
-            toEpoch date @?= 0
+      [ testCase "epoch zero" $ do
+          let date = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
+          -- Expected epoch time for the above date is 0
+          toEpoch date @?= 0
 
-          , testCase "toEpoch" $ do
-            let date2020 = UTCTime (fromGregorian 2020 1 1) (secondsToDiffTime 0)
-            -- Expected epoch time for January 1, 2020.
-            let expectedEpoch2020 = 1577836800
-            toEpoch date2020 @?= expectedEpoch2020
+      , testCase "toEpoch" $ do
+          let date2020 = UTCTime (fromGregorian 2020 1 1) (secondsToDiffTime 0)
+          -- Expected epoch time for January 1, 2020.
+          let expectedEpoch2020 = 1577836800
+          toEpoch date2020 @?= expectedEpoch2020
 
-          , testCase "createFile" $ do
-            withTempFile "/tmp" "known_hosts" $ \tmpFile _ -> do
-              -- Create a temporary file
-              createFile tmpFile
-              -- Check if the file exists
-              exists <- doesFileExist tmpFile
-              exists @?= True
-          ]
+      , testCase "createFile" $ do
+          withTempFile "/tmp" "known_hosts" $ \tmpFile _ -> do
+            -- Create a temporary file
+            createFile tmpFile
+            -- Check if the file exists
+            exists <- doesFileExist tmpFile
+            exists @?= True
+
+      , testCase "toDate - correct format" $ do
+          let date = "2022-01-01 00:00 UTC"
+          -- Expected date for the above string is January 1, 2022, 00:00:00 UTC
+          let expectedDate = UTCTime (fromGregorian 2022 1 1) (secondsToDiffTime 0)
+          -- Convert the string to a UTCTime value
+          toDate date @?= expectedDate
+
+      , testCase "toDate - incorrect format" $ do
+          let date = "2022-01-01 UTC"
+          -- Expected date for the above string is January 1, 2022, 00:00:00 UTC
+          let expectedDate = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
+          -- Convert the string to a UTCTime value
+          toDate date @?= expectedDate
+      ]

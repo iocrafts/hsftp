@@ -12,8 +12,7 @@ hsftp [OPTIONS] [ITEM]
 
 Common flags:
   -c --conf=FILE          Load conf from file
-     --from-date=DATE     Filter files by date (expected format YYYY-MM-DD
-                          HH:MM UTC|PST|...)
+     --from-date=DATE     Filter files by date (YYYY-MM-DD HH:MM UTC|PST|...)
   -e --extensions=ITEM    Filter files by extensions
   -u --up                 upload
   -d --down               download

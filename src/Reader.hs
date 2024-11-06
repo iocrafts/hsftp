@@ -41,6 +41,8 @@ data Env
           -- ^ Optional path to archive transferred files.
         , date               :: Integer
           -- ^ The date for filtering files to transfer.
+        , noOp               :: Bool
+          -- ^ Whether or not to perform the actual transfer.
         }
 
 type ReaderIO = ReaderT Env IO
