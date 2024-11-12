@@ -1,3 +1,9 @@
+## v1.3.1 (2024-11-12)
+
+### Fix
+
+- **config**: always create known_hosts file if it does not exist
+
 ## v1.3.0 (2024-11-06)
 
 ### Feat
