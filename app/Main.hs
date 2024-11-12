@@ -8,7 +8,7 @@ import           Commands               ( download, upload )
 
 import           Config
 
-import           Control.Monad          ( unless, when )
+import           Control.Monad          ( when )
 import           Control.Monad.Reader
 
 import qualified Data.ByteString.Char8  as C
@@ -39,7 +39,7 @@ loadEnv cfile dryRun = do
     Config {..} <- case config of
         Left e      -> error $ Y.prettyPrintParseException e
         Right yconf -> mkConfig yconf
-    unless dryRun $ createFile configKnownHosts
+    createFile configKnownHosts
 
     return Env  { hostName = configHost
                 , port = configPort
