@@ -4,7 +4,7 @@ github:              "mdusi/hsftp"
 license:             BSD-3-Clause
 author:              "Maurizio Dusi"
 maintainer:          "Maurizio Dusi"
-copyright:           "Maurizio Dusi"
+copyright:           "(c) 2024 Maurizio Dusi"
 
 extra-source-files:
 - README.md
@@ -12,15 +12,14 @@ extra-source-files:
 extra-doc-files:
 - CHANGELOG.md
 
-# Metadata used when publishing your package
 synopsis:            A SFTP client tool for secure file transfer operations
-category:            Utils
 homepage:            https://mdusi.github.io/hsftp/
+category:            Utils, Network
 
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/mdusi/hsftp#readme>
+description:         Hsftp is a command-line tool for secure file transfer operations
+
+pkg-config-dependencies:
+- libssh2
 
 dependencies:
 - base >= 4.7 && < 5
