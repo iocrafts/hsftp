@@ -11,7 +11,6 @@ import           Config
 import           Control.Monad          ( when )
 import           Control.Monad.Reader
 
-import qualified Data.ByteString.Char8  as C
 import qualified Data.Yaml              as Y
 
 import           Options                ( Direction (..), Options (..) )
@@ -62,7 +61,7 @@ main = do
         env' = env  { date = date
                     , transferFrom = src
                     , transferTo = dst
-                    , transferExtensions = map C.pack extensions
+                    , transferExtensions = extensions
                     , archiveTo = archive
                     }
 

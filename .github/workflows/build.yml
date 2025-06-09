@@ -58,7 +58,7 @@ jobs:
       uses: haskell-actions/setup@v2
       id: setup-haskell-stack
       with:
-        ghc-version: '9.6.5'
+        ghc-version: '9.8'
         enable-stack: true
         stack-version: 'latest'
         
