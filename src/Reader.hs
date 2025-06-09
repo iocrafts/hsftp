@@ -17,7 +17,6 @@ module Reader
 
 import           Control.Monad.Reader ( ReaderT )
 
-import qualified Data.ByteString      as B
 
 -- | Represents the environment configuration for the SFTP client.
 data Env
@@ -35,7 +34,7 @@ data Env
           -- ^ The source file path for transfer.
         , transferTo         :: FilePath
           -- ^ The destination file path for transfer.
-        , transferExtensions :: [B.ByteString]
+        , transferExtensions :: [String]
           -- ^ The list of file extensions to transfer.
         , archiveTo          :: Maybe FilePath
           -- ^ Optional path to archive transferred files.

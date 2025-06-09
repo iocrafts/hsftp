@@ -33,9 +33,7 @@ import           System.Directory                   ( copyFileWithMetadata,
                                                       getModificationTime,
                                                       listDirectory,
                                                       removeFile )
-import           System.FilePath                    ( (</>) )
-import           System.FilePath.ByteString         ( encodeFilePath,
-                                                      isExtensionOf )
+import           System.FilePath                    ( isExtensionOf, (</>) )
 
 import           Util                               ( toEpoch )
 
@@ -52,7 +50,7 @@ download = do
     liftIO $ withSFTPUser knownHosts user password hostName port $ \sftp -> do
         allFiles <- sftpListDir sftp transferFrom
         let byDate x = (toInteger . saMtime . snd) x >= date
-            byExtension x = null transferExtensions || or [extension `isExtensionOf` fst x | extension <- transferExtensions]
+            byExtension x = null transferExtensions || or [extension `isExtensionOf` (C.unpack . fst) x | extension <- transferExtensions]
             isFile = (== 0o100000) . (.&. 0o170000) . saPermissions . snd
             files = filter (\x -> byDate x && byExtension x && isFile x) allFiles
             getFile f = do
@@ -71,7 +69,7 @@ download = do
 upload :: ReaderIO Int
 upload = do
     Env{..} <- ask
-    let byExtension x = null transferExtensions || or [extension `isExtensionOf` encodeFilePath x | extension <- transferExtensions]
+    let byExtension x = null transferExtensions || or [extension `isExtensionOf` x | extension <- transferExtensions]
         byDate = fmap ( (>= date) . toEpoch ) . getModificationTime
     allFiles <- liftIO $ listDirectory transferFrom >>=
                     filterM ( doesFileExist . (transferFrom </>) ) >>=

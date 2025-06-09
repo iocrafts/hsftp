@@ -31,7 +31,6 @@ dependencies:
 - mtl
 - time
 - directory
-- filepath-bytestring
 - filepath
 
 default-extensions:

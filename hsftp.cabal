@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.37.0.
+-- This file has been generated from package.yaml by hpack version 0.38.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -52,7 +52,6 @@ library
     , cmdargs
     , directory
     , filepath
-    , filepath-bytestring
     , libssh2
     , mtl
     , time
@@ -79,7 +78,6 @@ executable hsftp
     , cmdargs
     , directory
     , filepath
-    , filepath-bytestring
     , hsftp
     , libssh2
     , mtl
@@ -111,7 +109,6 @@ test-suite hsftp-test
     , cmdargs
     , directory
     , filepath
-    , filepath-bytestring
     , hsftp
     , libssh2
     , mtl

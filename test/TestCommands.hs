@@ -19,22 +19,20 @@ module TestCommands
     , sftpUploadTests
     ) where
 
-import           Commands                   ( download, upload )
+import           Commands             ( download, upload )
 
-import           Control.Monad              ( filterM )
+import           Control.Monad        ( filterM )
 import           Control.Monad.Reader
 
-import           Reader                     ( Env (..) )
+import           Reader               ( Env (..) )
 
-import           System.Directory           ( createDirectoryIfMissing,
-                                              doesFileExist, listDirectory,
-                                              removeDirectoryRecursive )
-import           System.FilePath            ( (</>) )
-import           System.FilePath.ByteString ( encodeFilePath, isExtensionOf )
-import           System.IO                  ( hClose, openTempFile )
+import           System.Directory     ( createDirectoryIfMissing, doesFileExist,
+                                        listDirectory,
+                                        removeDirectoryRecursive )
+import           System.FilePath      ( isExtensionOf, (</>) )
+import           System.IO            ( hClose, openTempFile )
 
-import           Test.Tasty                 ( TestTree, testGroup,
-                                              withResource )
+import           Test.Tasty           ( TestTree, testGroup, withResource )
 import           Test.Tasty.HUnit
 
 
@@ -116,7 +114,7 @@ sftpUploadTests =
       [ testCase "Filter by extension" $ do
           env <- getResource
           let extensions = ["log"]
-              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+              byExtension x = null extensions || or [extension `isExtensionOf` x | extension <- extensions]
               env' = env { transferFrom = repoLocalDir
                          , transferTo = sftpRemoteDir </> "byext"
                          , transferExtensions = extensions
@@ -147,7 +145,7 @@ sftpUploadTests =
           hClose hArchiveFile
 
           let extensions = ["ark"]
-              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+              byExtension x = null extensions || or [extension `isExtensionOf` x | extension <- extensions]
               env' = env { transferFrom = archiveFromDir
                          , transferTo = sftpRemoteDir </> "archive"
                          , archiveTo = Just archiveToDir
@@ -179,7 +177,7 @@ sftpDownloadTests =
                          , transferTo = testFolder
                          , transferExtensions = extensions
                          }
-              byExtension x = null extensions || or [extension `isExtensionOf` encodeFilePath x | extension <- extensions]
+              byExtension x = null extensions || or [extension `isExtensionOf` x | extension <- extensions]
 
           numFiles <- runReaderT download env'
           allFiles <-  listDirectory repoLocalDir >>= filterM ( doesFileExist . (repoLocalDir </>) )
