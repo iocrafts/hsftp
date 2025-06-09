@@ -1,3 +1,10 @@
+## v1.4.0 (2025-06-09)
+
+### Build
+
+- **dep**: remove `filepath-bytestring` dependency
+- **resolver**: update to `lts-23.24`
+
 ## v1.3.1 (2024-11-12)
 
 ### Fix
