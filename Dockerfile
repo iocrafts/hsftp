@@ -13,15 +13,16 @@ RUN mv "$(stack path --local-install-root --system-ghc)/bin" /opt/build/bin
 
 FROM ubuntu:24.10 AS app
 
-RUN apt update && \
-        apt -y install libssh2-1 && \
-        apt clean && \
-        rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libssh2-1 && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/app
+
 COPY --from=stage1 /opt/build/bin .
 
-RUN groupadd -r svc && \
-    useradd -r -g svc svc && \
+RUN groupadd --system svc && \
+    useradd --system --gid svc --home-dir /opt/app --shell /usr/sbin/nologin svc && \
     chown -R svc:svc /opt/app
+
 USER svc
