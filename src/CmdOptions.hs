@@ -1,7 +1,7 @@
 {-|
 Module      : CmdOptions
 Description : Command-line options.
-Copyright   : (c) Maurizio Dusi, 2024
+Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
 Maintainer  : Maurizio Dusi
 Stability   : stable
