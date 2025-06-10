@@ -1,9 +1,9 @@
-FROM haskell:9.6.5 AS stage1
+FROM haskell:9.8.4 AS stage1
 
 WORKDIR /opt/build
 
 RUN apt update && \
-        apt -y install libssh2-1-dev
+        apt -y install pkg-config libssh2-1-dev
 
 COPY . /opt/build/
 RUN stack build
@@ -14,7 +14,7 @@ RUN mv "$(stack path --local-install-root --system-ghc)/bin" /opt/build/bin
 FROM ubuntu:24.10 AS app
 
 RUN apt update && \
-        apt -y install libssh2-1-dev && \
+        apt -y install libssh2-1 && \
         apt clean && \
         rm -rf /var/lib/apt/lists/*
 
