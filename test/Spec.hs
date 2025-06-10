@@ -1,7 +1,7 @@
 {-|
 Module      : Main
 Description : Main entry point for the test suite for SFTP actions.
-Copyright   : (c) Maurizio Dusi, 2024
+Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
 Maintainer  : Maurizio Dusi
 Stability   : stable

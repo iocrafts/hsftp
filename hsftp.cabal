@@ -9,11 +9,11 @@ version:        1.4.0
 synopsis:       A SFTP client tool for secure file transfer operations
 description:    Hsftp is a command-line tool for secure file transfer operations
 category:       Utils, Network
-homepage:       https://mdusi.github.io/hsftp/
-bug-reports:    https://github.com/mdusi/hsftp/issues
+homepage:       https://iocrafts.github.io/hsftp/
+bug-reports:    https://github.com/iocrafts/hsftp/issues
 author:         Maurizio Dusi
 maintainer:     Maurizio Dusi
-copyright:      (c) 2024 Maurizio Dusi
+copyright:      (c) 2024-present IOcrafts
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -24,7 +24,7 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/mdusi/hsftp
+  location: https://github.com/iocrafts/hsftp
 
 library
   exposed-modules:
