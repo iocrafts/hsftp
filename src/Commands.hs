@@ -28,8 +28,7 @@ import           Network.SSH.Client.LibSSH2.Foreign ( SftpAttributes (..) )
 
 import           Reader                             ( Env (..), ReaderIO )
 
-import           System.Directory                   ( copyFileWithMetadata,
-                                                      doesFileExist,
+import           System.Directory                   ( copyFile, doesFileExist,
                                                       getModificationTime,
                                                       listDirectory,
                                                       removeFile )
@@ -87,6 +86,6 @@ upload = do
                     Just d -> do
                         let src = transferFrom </> f
                             dst = d </> f
-                        copyFileWithMetadata src dst >> removeFile src
+                        copyFile src dst >> removeFile src
             mapM_ (\x -> putFile x >> archiveFile x) files
     return $ length files
