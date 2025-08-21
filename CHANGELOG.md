@@ -1,3 +1,9 @@
+## v1.4.1 (2025-08-21)
+
+### Feat
+
+- **commands**: do not copy metadata when archiving files after upload
+
 ## v1.4.0 (2025-06-09)
 
 ### Build
