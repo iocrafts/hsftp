@@ -22,7 +22,7 @@ import           System.IO.Temp   ( withTempFile )
 import           Test.Tasty       ( TestTree, testGroup )
 import           Test.Tasty.HUnit ( testCase, (@?=) )
 
-import           Util             ( createFile, toDate, toEpoch )
+import           Hsftp.Util       ( createFile, toDate, toEpoch )
 
 utilTests :: TestTree
 utilTests =

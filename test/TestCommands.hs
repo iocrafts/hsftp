@@ -19,12 +19,12 @@ module TestCommands
     , sftpUploadTests
     ) where
 
-import           Commands             ( download, upload )
+import           Hsftp.Commands       ( download, upload )
 
 import           Control.Monad        ( filterM )
 import           Control.Monad.Reader
 
-import           Reader               ( Env (..) )
+import           Hsftp.Reader         ( Env (..) )
 
 import           System.Directory     ( createDirectoryIfMissing, doesFileExist,
                                         listDirectory,

@@ -14,7 +14,7 @@ module TestReader
     ( readerTests
     ) where
 
-import           Reader           ( Env (..) )
+import           Hsftp.Reader     ( Env (..) )
 
 import           Test.Tasty       ( TestTree, testGroup )
 import           Test.Tasty.HUnit ( testCase, (@?=) )
