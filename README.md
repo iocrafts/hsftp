@@ -6,7 +6,7 @@ Usage of hsftp
 --------------
 
 ```
-Hsftp 1.4.1. Usage: hsftp OPTION
+Hsftp 1.5.0. Usage: hsftp OPTION
 
 hsftp [OPTIONS] [ITEM]
 
