@@ -1,5 +1,5 @@
 {-|
-Module      : Commands
+Module      : Hsftp.Commands
 Description : Supported commands.
 Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
@@ -11,7 +11,7 @@ This module holds a collection of supported commands.
 -}
 
 
-module Commands
+module Hsftp.Commands
     ( download
     , upload
     ) where
@@ -23,18 +23,17 @@ import           Control.Monad.Reader
 import           Data.Bits                          ( (.&.) )
 import qualified Data.ByteString.Char8              as C
 
+import           Hsftp.Reader                       ( Env (..), ReaderIO )
+import           Hsftp.Util                         ( toEpoch )
+
 import           Network.SSH.Client.LibSSH2
 import           Network.SSH.Client.LibSSH2.Foreign ( SftpAttributes (..) )
-
-import           Reader                             ( Env (..), ReaderIO )
 
 import           System.Directory                   ( copyFile, doesFileExist,
                                                       getModificationTime,
                                                       listDirectory,
                                                       removeFile )
 import           System.FilePath                    ( isExtensionOf, (</>) )
-
-import           Util                               ( toEpoch )
 
 
 {-|

@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
-Module      : Config
+Module      : Hsftp.Config
 Description : Process the YAML configuration file.
 Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
@@ -24,7 +24,7 @@ __Example of conf.yaml:__
 
 -}
 
-module Config
+module Hsftp.Config
     ( Config (..)
     , mkConfig
     ) where

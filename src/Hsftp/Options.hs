@@ -2,18 +2,18 @@
 {-# LANGUAGE DerivingStrategies #-}
 
 {-|
-Module      : Options
-Description : Holds the options for the hedictl utility.
+Module      : Hsftp.Options
+Description : Holds the options for the hsftp utility.
 Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
 Maintainer  : Maurizio Dusi
 Stability   : stable
 Portability : POSIX
 
-This module holds the available options for the hedictl utility.
+This module holds the available options for the hsftp utility.
 -}
 
-module Options
+module Hsftp.Options
     ( Direction (..)
     , Options (..)
     ) where

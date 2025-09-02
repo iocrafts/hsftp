@@ -16,13 +16,13 @@ module TestUtil
 
 import           Data.Time
 
+import           Hsftp.Util       ( createFile, toDate, toEpoch )
+
 import           System.Directory ( doesFileExist )
 import           System.IO.Temp   ( withTempFile )
 
 import           Test.Tasty       ( TestTree, testGroup )
 import           Test.Tasty.HUnit ( testCase, (@?=) )
-
-import           Util             ( createFile, toDate, toEpoch )
 
 utilTests :: TestTree
 utilTests =

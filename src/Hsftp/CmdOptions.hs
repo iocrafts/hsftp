@@ -1,5 +1,5 @@
 {-|
-Module      : CmdOptions
+Module      : Hsftp.CmdOptions
 Description : Command-line options.
 Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
@@ -10,13 +10,13 @@ Portability : POSIX
 This module holds the command-line options accepted by executable.
 -}
 
-module CmdOptions
+module Hsftp.CmdOptions
     ( options
     ) where
 
 import           Data.Version           ( showVersion )
 
-import           Options                ( Direction (..), Options (..) )
+import           Hsftp.Options          ( Direction (..), Options (..) )
 
 import           Paths_hsftp            ( version )
 

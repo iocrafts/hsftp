@@ -26,3 +26,4 @@ RUN groupadd --system svc && \
     chown -R svc:svc /opt/app
 
 USER svc
+ENV PATH="/opt/app:${PATH}"

@@ -1,5 +1,5 @@
 {-|
-Module      : Util
+Module      : Hsftp.Util
 Description : Collections of utility functions.
 Copyright   : (c) IOcrafts, 2024-present
 License     : BSD
@@ -12,7 +12,7 @@ This module provides utility functions for file, date and time manipulation.
 -}
 
 
-module Util
+module Hsftp.Util
     ( createFile
     , toDate
     , toEpoch
