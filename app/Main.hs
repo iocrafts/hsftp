@@ -2,24 +2,19 @@ module Main
     ( main
     ) where
 
-import           Hsftp.CmdOptions             ( options )
-
-import           Hsftp.Commands               ( download, upload )
-
-import           Hsftp.Config
-
 import           Control.Monad          ( when )
 import           Control.Monad.Reader
 
 import qualified Data.Yaml              as Y
 
-import           Hsftp.Options                ( Direction (..), Options (..) )
-
-import           Hsftp.Reader                 ( Env (..) )
+import           Hsftp.CmdOptions       ( options )
+import           Hsftp.Commands         ( download, upload )
+import           Hsftp.Config
+import           Hsftp.Options          ( Direction (..), Options (..) )
+import           Hsftp.Reader           ( Env (..) )
+import           Hsftp.Util             ( createFile, toDate, toEpoch )
 
 import           System.Console.CmdArgs ( cmdArgsRun )
-
-import           Hsftp.Util                   ( createFile, toDate, toEpoch )
 
 
 -- | Loads the environment configuration from a file.

@@ -23,18 +23,17 @@ import           Control.Monad.Reader
 import           Data.Bits                          ( (.&.) )
 import qualified Data.ByteString.Char8              as C
 
+import           Hsftp.Reader                       ( Env (..), ReaderIO )
+import           Hsftp.Util                         ( toEpoch )
+
 import           Network.SSH.Client.LibSSH2
 import           Network.SSH.Client.LibSSH2.Foreign ( SftpAttributes (..) )
-
-import           Hsftp.Reader                       ( Env (..), ReaderIO )
 
 import           System.Directory                   ( copyFile, doesFileExist,
                                                       getModificationTime,
                                                       listDirectory,
                                                       removeFile )
 import           System.FilePath                    ( isExtensionOf, (</>) )
-
-import           Hsftp.Util                         ( toEpoch )
 
 
 {-|

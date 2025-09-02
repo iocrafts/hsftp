@@ -19,19 +19,20 @@ module Hsftp.Reader
 
 import           Control.Monad.Reader
 
-data Env = Env
-    { hostName           :: String
-    , port               :: Int
-    , knownHosts         :: String
-    , user               :: String
-    , password           :: String
-    , transferFrom       :: String
-    , transferTo         :: String
-    , transferExtensions :: [String]
-    , archiveTo          :: Maybe String
-    , date               :: Integer
-    , noOp               :: Bool
-    } deriving (Show)
+data Env
+  = Env { hostName           :: String
+        , port               :: Int
+        , knownHosts         :: String
+        , user               :: String
+        , password           :: String
+        , transferFrom       :: String
+        , transferTo         :: String
+        , transferExtensions :: [String]
+        , archiveTo          :: Maybe String
+        , date               :: Integer
+        , noOp               :: Bool
+        }
+  deriving (Show)
 
 
 type ReaderIO a = ReaderT Env IO a
