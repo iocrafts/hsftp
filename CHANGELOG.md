@@ -1,3 +1,13 @@
+## v1.5.0 (2025-09-02)
+
+### Feat
+
+- **namespace**: move source files to the Hsftp namespace
+
+### CI
+
+- **workflows**: assign permissions to workflows
+
 ## v1.4.1 (2025-08-21)
 
 ### Feat
