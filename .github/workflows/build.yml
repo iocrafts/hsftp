@@ -61,6 +61,7 @@ jobs:
         path: |
           repo/.stack-work
           ~/.stack
+          !~/.stack/indices/
 
     - name: setup Haskell stack
       uses: haskell-actions/setup@v2
