@@ -1,1 +1,78 @@
-module Main\n    ( main\n    ) where\n\nimport           Hsftp.CmdOptions       ( options )\n\nimport           Hsftp.Commands         ( download, upload )\n\nimport           Hsftp.Config\n\nimport           Control.Monad          ( when )\nimport           Control.Monad.Reader\n\nimport qualified Data.Yaml              as Y\n\nimport           Hsftp.Options          ( Direction (..), Options (..) )\n\nimport           Hsftp.Reader           ( Env (..) )\n\nimport           System.Console.CmdArgs ( cmdArgsRun )\n\nimport           Hsftp.Util             ( createFile, toDate, toEpoch )\n\n\n-- | Loads the environment configuration from a file.\n--\n-- The function reads the configuration file specified by the given file path,\n-- decodes it using the `decodeFileEither` function from the `yaml` library,\n-- and constructs an `Env` value based on the decoded configuration.\n--\n-- If the configuration file cannot be parsed, an error is thrown with a\n-- pretty-printed parse exception.\n--\n-- Returns the constructed `Env` value.\nloadEnv :: FilePath -> Bool -> IO Env\nloadEnv cfile dryRun = do\n    config <- Y.decodeFileEither cfile\n    Config {..} <- case config of\n        Left e      -> error $ Y.prettyPrintParseException e\n        Right yconf -> mkConfig yconf\n    createFile configKnownHosts\n\n    return Env  { hostName = configHost\n                , port = configPort\n                , knownHosts = configKnownHosts\n                , user = configUser\n                , password = configPassword\n                , transferFrom = \"\"\n                , transferTo = \"\"\n                , transferExtensions = []\n                , archiveTo = Nothing\n                , date = 0\n                , noOp = dryRun\n                }\n\nmain :: IO ()\nmain = do\n    Options{..} <- cmdArgsRun options\n    env <- loadEnv conf dryRun\n    let date = toEpoch . toDate $ fromDate\n        env' = env  { date = date\n                    , transferFrom = src\n                    , transferTo = dst\n                    , transferExtensions = extensions\n                    , archiveTo = archive\n                    }\n\n    when (direction == Down) $ do\n        numFiles <- runReaderT download env'\n        if dryRun\n        then putStrLn $ \"Would download \" ++ show numFiles ++ \" file(s).\"\n        else putStrLn $ \"Download completed. \" ++ show numFiles ++ \" file(s) downloaded.\"\n\n    when (direction == Up) $ do\n        numFiles <- runReaderT upload env'\n        if dryRun\n        then putStrLn $ \"Would upload \" ++ show numFiles ++ \" file(s).\"\n        else putStrLn $ \"Upload completed. \" ++ show numFiles ++ \" file(s) uploaded.\"
+module Main
+    ( main
+    ) where
+
+import           Hsftp.CmdOptions             ( options )
+
+import           Hsftp.Commands               ( download, upload )
+
+import           Hsftp.Config
+
+import           Control.Monad          ( when )
+import           Control.Monad.Reader
+
+import qualified Data.Yaml              as Y
+
+import           Hsftp.Options                ( Direction (..), Options (..) )
+
+import           Hsftp.Reader                 ( Env (..) )
+
+import           System.Console.CmdArgs ( cmdArgsRun )
+
+import           Hsftp.Util                   ( createFile, toDate, toEpoch )
+
+
+-- | Loads the environment configuration from a file.
+--
+-- The function reads the configuration file specified by the given file path,
+-- decodes it using the `decodeFileEither` function from the `yaml` library,
+-- and constructs an `Env` value based on the decoded configuration.
+--
+-- If the configuration file cannot be parsed, an error is thrown with a
+-- pretty-printed parse exception.
+--
+-- Returns the constructed `Env` value.
+loadEnv :: FilePath -> Bool -> IO Env
+loadEnv cfile dryRun = do
+    config <- Y.decodeFileEither cfile
+    Config {..} <- case config of
+        Left e      -> error $ Y.prettyPrintParseException e
+        Right yconf -> mkConfig yconf
+    createFile configKnownHosts
+
+    return Env  { hostName = configHost
+                , port = configPort
+                , knownHosts = configKnownHosts
+                , user = configUser
+                , password = configPassword
+                , transferFrom = ""
+                , transferTo = ""
+                , transferExtensions = []
+                , archiveTo = Nothing
+                , date = 0
+                , noOp = dryRun
+                }
+
+main :: IO ()
+main = do
+    Options{..} <- cmdArgsRun options
+    env <- loadEnv conf dryRun
+    let date = toEpoch . toDate $ fromDate
+        env' = env  { date = date
+                    , transferFrom = src
+                    , transferTo = dst
+                    , transferExtensions = extensions
+                    , archiveTo = archive
+                    }
+
+    when (direction == Down) $ do
+        numFiles <- runReaderT download env'
+        if dryRun
+        then putStrLn $ "Would download " ++ show numFiles ++ " file(s)."
+        else putStrLn $ "Download completed. " ++ show numFiles ++ " file(s) downloaded."
+
+    when (direction == Up) $ do
+        numFiles <- runReaderT upload env'
+        if dryRun
+        then putStrLn $ "Would upload " ++ show numFiles ++ " file(s)."
+        else putStrLn $ "Upload completed. " ++ show numFiles ++ " file(s) uploaded."
